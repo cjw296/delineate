@@ -1,0 +1,17 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+_build/
+dist/
+wheels/
+*.egg-info
+
+# All dotfiles, excluding specific ones
+.*
+!.git*
+!.python-version
+!.readthedocs.yaml
+/*.json
+/*.jsonl
+uv.lock
