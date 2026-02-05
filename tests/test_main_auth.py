@@ -1,10 +1,13 @@
 import json
+from pathlib import Path
+
+from pytest_httpx import HTTPXMock
 
 from .helpers import run_cli
 
 
 class TestAuth:
-    def test_auth(self, httpx_mock, tmp_path):  # type: ignore[no-untyped-def]
+    def test_auth(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
         httpx_mock.add_response(
             json={
                 "data": {
@@ -26,7 +29,7 @@ class TestAuth:
         data = json.loads(auth_file.read_text())
         assert data["api_key"] == "lin_api_test"
 
-    def test_auth_invalid_key(self, httpx_mock, tmp_path):  # type: ignore[no-untyped-def]
+    def test_auth_invalid_key(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
         httpx_mock.add_response(
             json={
                 "errors": [{"message": "Authentication required"}]
@@ -42,7 +45,7 @@ class TestAuth:
 
 
 class TestWhoami:
-    def test_whoami(self, httpx_mock, tmp_path):  # type: ignore[no-untyped-def]
+    def test_whoami(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
         httpx_mock.add_response(
             json={
                 "data": {
