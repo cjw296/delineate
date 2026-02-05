@@ -79,12 +79,8 @@ class StaticExport(Export):
 
 
 EXPORTS: dict[str, Export] = {
-    "teams": StaticExport(
-        entity_type="teams", query=TEAMS, connection_path="teams"
-    ),
-    "users": StaticExport(
-        entity_type="users", query=USERS, connection_path="users"
-    ),
+    "teams": StaticExport(entity_type="teams", query=TEAMS, connection_path="teams"),
+    "users": StaticExport(entity_type="users", query=USERS, connection_path="users"),
     "issues": Export(
         entity_type="issues",
         query=ISSUES,

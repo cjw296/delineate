@@ -20,9 +20,7 @@ class TestAuth:
             },
         )
         auth_file = tmp_path / ".delineate.json"
-        result = run_cli(
-            "--auth", str(auth_file), "auth", input="lin_api_test\n"
-        )
+        result = run_cli("--auth", str(auth_file), "auth", input="lin_api_test\n")
         assert result.exit_code == 0
         assert "Authenticated as Test User" in result.output
         assert auth_file.exists()
@@ -31,14 +29,10 @@ class TestAuth:
 
     def test_auth_invalid_key(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
         httpx_mock.add_response(
-            json={
-                "errors": [{"message": "Authentication required"}]
-            },
+            json={"errors": [{"message": "Authentication required"}]},
         )
         auth_file = tmp_path / ".delineate.json"
-        result = run_cli(
-            "--auth", str(auth_file), "auth", input="bad_key\n"
-        )
+        result = run_cli("--auth", str(auth_file), "auth", input="bad_key\n")
         assert result.exit_code != 0
         assert "Authentication failed" in result.output
         assert not auth_file.exists()

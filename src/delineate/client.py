@@ -37,9 +37,7 @@ class LinearClient:
 
             if "errors" in data:
                 errors: list[dict[str, Any]] = data["errors"]
-                if any(
-                    e.get("extensions", {}).get("code") == "RATELIMITED" for e in errors
-                ):
+                if any(e.get("extensions", {}).get("code") == "RATELIMITED" for e in errors):
                     wait = 2**attempt
                     logger.warning("Rate limited, retrying in %ds...", wait)
                     time.sleep(wait)

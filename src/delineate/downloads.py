@@ -5,9 +5,7 @@ from urllib.parse import urlparse, urlunparse
 
 from .client import LinearClient
 
-UPLOAD_URL_PATTERN = re.compile(
-    r'!?\[([^\]]*)\]\((https://uploads\.linear\.app/[^)]+)\)'
-)
+UPLOAD_URL_PATTERN = re.compile(r'!?\[([^\]]*)\]\((https://uploads\.linear\.app/[^)]+)\)')
 
 
 def extract_upload_urls(text: str) -> list[tuple[str, str]]:
@@ -29,9 +27,7 @@ def _local_filename(url: str, display_name: str) -> str:
     return f"{file_uuid}_{name}"
 
 
-def download_file(
-    client: LinearClient, url: str, display_name: str, dest_dir: Path
-) -> str:
+def download_file(client: LinearClient, url: str, display_name: str, dest_dir: Path) -> str:
     filename = _local_filename(url, display_name)
     dest = dest_dir / filename
     if dest.exists():

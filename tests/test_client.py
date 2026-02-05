@@ -59,11 +59,7 @@ class TestQuery:
 
     def test_graphql_error(self, httpx_mock: HTTPXMock) -> None:
         httpx_mock.add_response(
-            json={
-                "errors": [
-                    {"message": "Field 'foo' not found on type 'Query'"}
-                ]
-            },
+            json={"errors": [{"message": "Field 'foo' not found on type 'Query'"}]},
         )
         client = LinearClient(api_key="lin_api_test")
         with pytest.raises(LinearAPIError, match="Field 'foo' not found"):
