@@ -65,26 +65,17 @@ class TestExportCommand:
             ),
         )
 
-        result = run_cli(
-            "--auth", str(auth_file), "export", "--path", str(export_dir), "teams"
-        )
+        result = run_cli("--auth", str(auth_file), "export", "--path", str(export_dir), "teams")
         assert result.exit_code == 0
 
-        entity_file = (
-            export_dir
-            / "teams"
-            / "8391"
-            / "83914fc0-4a65-463c-b1d3-ffe9e75070ab.json"
-        )
+        entity_file = export_dir / "teams" / "8391" / "83914fc0-4a65-463c-b1d3-ffe9e75070ab.json"
         assert entity_file.exists()
         data = json.loads(entity_file.read_text())
         assert data["name"] == "Engineering"
 
     def test_unknown_entity(self, tmp_path: Path) -> None:
         auth_file = _make_auth_file(tmp_path)
-        result = run_cli(
-            "--auth", str(auth_file), "export", "nonexistent"
-        )
+        result = run_cli("--auth", str(auth_file), "export", "nonexistent")
         assert result.exit_code != 0
 
     def test_update_mode_saves_latest(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
@@ -158,9 +149,7 @@ class TestExportCommand:
         request = httpx_mock.get_request()
         assert request is not None
         body = json.loads(request.content)
-        assert body["variables"]["filter"] == {
-            "updatedAt": {"gt": "2024-01-01T00:00:00Z"}
-        }
+        assert body["variables"]["filter"] == {"updatedAt": {"gt": "2024-01-01T00:00:00Z"}}
 
         latest = LatestData.load(latest_path)
         assert latest["issues"] == "2024-06-20T12:00:00Z"
@@ -173,7 +162,9 @@ class TestExportCommand:
         entity_dir = export_dir / "teams" / "8391"
         entity_dir.mkdir(parents=True)
         entity_file = entity_dir / "83914fc0-4a65-463c-b1d3-ffe9e75070ab.json"
-        entity_file.write_text(json.dumps({"id": "83914fc0-4a65-463c-b1d3-ffe9e75070ab", "name": "Old"}))
+        entity_file.write_text(
+            json.dumps({"id": "83914fc0-4a65-463c-b1d3-ffe9e75070ab", "name": "Old"})
+        )
 
         httpx_mock.add_response(
             json=make_paginated_response(
@@ -188,9 +179,7 @@ class TestExportCommand:
             ),
         )
 
-        result = run_cli(
-            "--auth", str(auth_file), "export", "--path", str(export_dir), "teams"
-        )
+        result = run_cli("--auth", str(auth_file), "export", "--path", str(export_dir), "teams")
         assert result.exit_code == 0
 
         data = json.loads(entity_file.read_text())

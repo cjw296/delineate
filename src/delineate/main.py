@@ -101,9 +101,7 @@ def export(
     if entities:
         unknown = set(entities) - set(EXPORTS)
         if unknown:
-            raise click.BadParameter(
-                f"Unknown entities: {', '.join(sorted(unknown))}"
-            )
+            raise click.BadParameter(f"Unknown entities: {', '.join(sorted(unknown))}")
         exports_to_run = {name: EXPORTS[name] for name in entities}
 
     all_upload_urls: list[tuple[str, str]] = []
