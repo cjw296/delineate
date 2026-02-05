@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+from pytest_httpx import HTTPXMock
+
 from delineate.export import LatestData, entity_path
 
 from .helpers import make_paginated_response, run_cli
@@ -13,28 +15,28 @@ def _make_auth_file(tmp_path: Path) -> Path:
 
 
 class TestEntityPath:
-    def test_basic(self, tmp_path):
+    def test_basic(self, tmp_path: Path) -> None:
         path = entity_path(tmp_path, "issues", "a01126f0-8a0a-4c98-ac24-b15a7706d048")
         assert path == tmp_path / "issues" / "a011" / "a01126f0-8a0a-4c98-ac24-b15a7706d048.json"
         assert path.parent.exists()
 
-    def test_different_prefix(self, tmp_path):
+    def test_different_prefix(self, tmp_path: Path) -> None:
         path = entity_path(tmp_path, "comments", "ff991234-0000-0000-0000-000000000000")
         assert path == tmp_path / "comments" / "ff99" / "ff991234-0000-0000-0000-000000000000.json"
 
 
 class TestLatestData:
-    def test_load_missing(self, tmp_path):
+    def test_load_missing(self, tmp_path: Path) -> None:
         latest = LatestData.load(tmp_path / "latest.json")
         assert latest == {}
 
-    def test_load_existing(self, tmp_path):
+    def test_load_existing(self, tmp_path: Path) -> None:
         path = tmp_path / "latest.json"
         path.write_text(json.dumps({"issues": "2024-01-01T00:00:00Z"}))
         latest = LatestData.load(path)
         assert latest["issues"] == "2024-01-01T00:00:00Z"
 
-    def test_save(self, tmp_path):
+    def test_save(self, tmp_path: Path) -> None:
         latest = LatestData({"issues": "2024-06-01T00:00:00Z"})
         path = tmp_path / "latest.json"
         latest.save(path)
@@ -43,7 +45,7 @@ class TestLatestData:
 
 
 class TestExportCommand:
-    def test_single_entity(self, httpx_mock, tmp_path):  # type: ignore[no-untyped-def]
+    def test_single_entity(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
         auth_file = _make_auth_file(tmp_path)
         export_dir = tmp_path / "export"
         export_dir.mkdir()
@@ -78,14 +80,14 @@ class TestExportCommand:
         data = json.loads(entity_file.read_text())
         assert data["name"] == "Engineering"
 
-    def test_unknown_entity(self, tmp_path):
+    def test_unknown_entity(self, tmp_path: Path) -> None:
         auth_file = _make_auth_file(tmp_path)
         result = run_cli(
             "--auth", str(auth_file), "export", "nonexistent"
         )
         assert result.exit_code != 0
 
-    def test_update_mode_saves_latest(self, httpx_mock, tmp_path):  # type: ignore[no-untyped-def]
+    def test_update_mode_saves_latest(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
         auth_file = _make_auth_file(tmp_path)
         export_dir = tmp_path / "export"
         export_dir.mkdir()
@@ -119,7 +121,7 @@ class TestExportCommand:
         latest = LatestData.load(export_dir / "latest.json")
         assert latest["issues"] == "2024-06-15T12:00:00Z"
 
-    def test_update_mode_uses_cursor(self, httpx_mock, tmp_path):  # type: ignore[no-untyped-def]
+    def test_update_mode_uses_cursor(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
         auth_file = _make_auth_file(tmp_path)
         export_dir = tmp_path / "export"
         export_dir.mkdir()
@@ -163,7 +165,7 @@ class TestExportCommand:
         latest = LatestData.load(latest_path)
         assert latest["issues"] == "2024-06-20T12:00:00Z"
 
-    def test_entity_overwrite_on_update(self, httpx_mock, tmp_path):  # type: ignore[no-untyped-def]
+    def test_entity_overwrite_on_update(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
         auth_file = _make_auth_file(tmp_path)
         export_dir = tmp_path / "export"
         export_dir.mkdir()
@@ -194,7 +196,7 @@ class TestExportCommand:
         data = json.loads(entity_file.read_text())
         assert data["name"] == "Renamed"
 
-    def test_export_with_markdown_downloads(self, httpx_mock, tmp_path):  # type: ignore[no-untyped-def]
+    def test_export_with_markdown_downloads(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
         auth_file = _make_auth_file(tmp_path)
         export_dir = tmp_path / "export"
         export_dir.mkdir()

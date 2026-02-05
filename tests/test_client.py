@@ -1,4 +1,7 @@
+from pathlib import Path
+
 import pytest
+from pytest_httpx import HTTPXMock
 from testfixtures import Replacer
 
 from delineate.client import LinearClient
@@ -8,7 +11,7 @@ from .helpers import make_paginated_response
 
 
 class TestQuery:
-    def test_basic(self, httpx_mock):  # type: ignore[no-untyped-def]
+    def test_basic(self, httpx_mock: HTTPXMock) -> None:
         httpx_mock.add_response(
             json={"data": {"viewer": {"id": "123", "name": "Test"}}},
         )
@@ -16,7 +19,7 @@ class TestQuery:
         result = client.query("{ viewer { id name } }")
         assert result == {"viewer": {"id": "123", "name": "Test"}}
 
-    def test_rate_limit_retry(self, httpx_mock):  # type: ignore[no-untyped-def]
+    def test_rate_limit_retry(self, httpx_mock: HTTPXMock) -> None:
         httpx_mock.add_response(
             json={
                 "errors": [
@@ -36,7 +39,7 @@ class TestQuery:
             result = client.query("{ viewer { id } }")
         assert result == {"viewer": {"id": "123"}}
 
-    def test_rate_limit_exhausted(self, httpx_mock):  # type: ignore[no-untyped-def]
+    def test_rate_limit_exhausted(self, httpx_mock: HTTPXMock) -> None:
         for _ in range(3):
             httpx_mock.add_response(
                 json={
@@ -54,7 +57,7 @@ class TestQuery:
             with pytest.raises(LinearAPIError, match="Rate limited after max retries"):
                 client.query("{ viewer { id } }")
 
-    def test_graphql_error(self, httpx_mock):  # type: ignore[no-untyped-def]
+    def test_graphql_error(self, httpx_mock: HTTPXMock) -> None:
         httpx_mock.add_response(
             json={
                 "errors": [
@@ -68,7 +71,7 @@ class TestQuery:
 
 
 class TestPaginate:
-    def test_single_page(self, httpx_mock):  # type: ignore[no-untyped-def]
+    def test_single_page(self, httpx_mock: HTTPXMock) -> None:
         httpx_mock.add_response(
             json=make_paginated_response(
                 "issues",
@@ -79,7 +82,7 @@ class TestPaginate:
         results = list(client.paginate("query", "issues"))
         assert results == [{"id": "1", "title": "First"}, {"id": "2", "title": "Second"}]
 
-    def test_multiple_pages(self, httpx_mock):  # type: ignore[no-untyped-def]
+    def test_multiple_pages(self, httpx_mock: HTTPXMock) -> None:
         httpx_mock.add_response(
             json=make_paginated_response(
                 "issues",
@@ -100,7 +103,7 @@ class TestPaginate:
 
 
 class TestDownload:
-    def test_download(self, httpx_mock, tmp_path):  # type: ignore[no-untyped-def]
+    def test_download(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
         httpx_mock.add_response(content=b"file contents here")
         client = LinearClient(api_key="lin_api_test")
         dest = tmp_path / "test_file.bin"
