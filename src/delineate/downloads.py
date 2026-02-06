@@ -37,9 +37,7 @@ def file_dir(base_dir: Path, url: str) -> Path:
     return base_dir / prefix / uuid
 
 
-def download_file(
-    client: LinearClient, url: str, display_name: str, dest_dir: Path
-) -> str | None:
+def download_file(client: LinearClient, url: str, display_name: str, dest_dir: Path) -> str | None:
     filename = display_name or "file"
     file_directory = file_dir(dest_dir, url)
     dest = file_directory / filename
@@ -77,9 +75,7 @@ def append_manifest(dest_dir: Path, url: str, filename: str) -> None:
         f.write(entry + "\n")
 
 
-def download_all(
-    client: LinearClient, urls: list[tuple[str, str]], dest_dir: Path
-) -> None:
+def download_all(client: LinearClient, urls: list[tuple[str, str]], dest_dir: Path) -> None:
     dest_dir.mkdir(parents=True, exist_ok=True)
     already_downloaded = load_manifest(dest_dir)
     for display_name, base_url in urls:
