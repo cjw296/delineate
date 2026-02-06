@@ -217,7 +217,8 @@ class TestExportCommand:
         assert result.exit_code == 0
 
         files_dir = export_dir / "files"
-        assert (files_dir / "abcd1234_screenshot").exists()
-        assert (files_dir / "manifest.json").exists()
-        manifest = json.loads((files_dir / "manifest.json").read_text())
-        assert "https://uploads.linear.app/ws/uuid/abcd1234" in manifest
+        assert (files_dir / "abcd" / "abcd1234" / "screenshot").exists()
+        assert (files_dir / "manifest.jsonl").exists()
+        manifest_line = (files_dir / "manifest.jsonl").read_text().strip()
+        manifest_entry = json.loads(manifest_line)
+        assert manifest_entry["url"] == "https://uploads.linear.app/ws/uuid/abcd1234"

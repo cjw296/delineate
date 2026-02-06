@@ -6,7 +6,7 @@ import click
 import enlighten
 
 from .client import LinearClient, client_from_auth
-from .downloads import download_all, extract_upload_urls, write_manifest
+from .downloads import download_all, extract_upload_urls
 from .exceptions import LinearAPIError
 from .export import EXPORTS, LatestData, write_entity
 from .queries import VIEWER
@@ -124,10 +124,9 @@ def export(
             download_counter = manager.counter(
                 desc="files", unit="files", total=len(all_upload_urls)
             )
-            manifest = download_all(client, all_upload_urls, files_dir)
+            download_all(client, all_upload_urls, files_dir)
             download_counter.update(len(all_upload_urls))
             download_counter.close()
-            write_manifest(manifest, files_dir)
     finally:
         manager.stop()
 

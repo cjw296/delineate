@@ -24,22 +24,27 @@ def extract_upload_urls(text: str) -> list[tuple[str, str]]:
     return results
 
 
-def _local_filename(url: str, display_name: str) -> str:
+def _file_uuid(url: str) -> str:
     parsed = urlparse(url)
     path_parts = parsed.path.rstrip("/").split("/")
-    file_uuid = path_parts[-1][:8]
-    name = display_name or file_uuid
-    return f"{file_uuid}_{name}"
+    return path_parts[-1]
+
+
+def file_dir(base_dir: Path, url: str) -> Path:
+    uuid = _file_uuid(url)
+    prefix = uuid[:4]
+    return base_dir / prefix / uuid
 
 
 def download_file(
     client: LinearClient, url: str, display_name: str, dest_dir: Path
 ) -> str | None:
-    filename = _local_filename(url, display_name)
-    dest = dest_dir / filename
+    filename = display_name or "file"
+    file_directory = file_dir(dest_dir, url)
+    dest = file_directory / filename
     if dest.exists():
         return filename
-    dest_dir.mkdir(parents=True, exist_ok=True)
+    file_directory.mkdir(parents=True, exist_ok=True)
     try:
         client.download(url, dest)
     except httpx.HTTPStatusError as e:
@@ -48,20 +53,33 @@ def download_file(
     return filename
 
 
+def load_manifest(dest_dir: Path) -> set[str]:
+    manifest_path = dest_dir / "manifest.jsonl"
+    urls: set[str] = set()
+    if manifest_path.exists():
+        for line in manifest_path.read_text().splitlines():
+            if line.strip():
+                entry = json.loads(line)
+                urls.add(entry["url"])
+    return urls
+
+
+def append_manifest(dest_dir: Path, url: str, filename: str) -> None:
+    manifest_path = dest_dir / "manifest.jsonl"
+    entry = json.dumps({"url": url, "filename": filename})
+    with manifest_path.open("a") as f:
+        f.write(entry + "\n")
+
+
 def download_all(
     client: LinearClient, urls: list[tuple[str, str]], dest_dir: Path
-) -> dict[str, str]:
+) -> None:
     dest_dir.mkdir(parents=True, exist_ok=True)
-    manifest: dict[str, str] = {}
+    already_downloaded = load_manifest(dest_dir)
     for display_name, base_url in urls:
-        if base_url in manifest:
+        if base_url in already_downloaded:
             continue
         filename = download_file(client, base_url, display_name, dest_dir)
         if filename is not None:
-            manifest[base_url] = filename
-    return manifest
-
-
-def write_manifest(manifest: dict[str, str], dest_dir: Path) -> None:
-    manifest_path = dest_dir / "manifest.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
+            append_manifest(dest_dir, base_url, filename)
+            already_downloaded.add(base_url)
