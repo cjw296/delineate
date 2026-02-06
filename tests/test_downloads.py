@@ -92,6 +92,18 @@ class TestDownloadFile:
         )
         assert filename == "abcd1234_abcd1234"
 
+    def test_http_error(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
+        httpx_mock.add_response(status_code=401)
+        client = LinearClient(api_key="lin_api_test")
+        filename = download_file(
+            client,
+            "https://uploads.linear.app/ws/uuid/abcd1234",
+            "report.pdf",
+            tmp_path,
+        )
+        assert filename is None
+        assert not (tmp_path / "abcd1234_report.pdf").exists()
+
 
 class TestDownloadAll:
     def test_basic(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
@@ -119,6 +131,25 @@ class TestDownloadAll:
         ]
         manifest = download_all(client, urls, tmp_path / "files")
         assert len(manifest) == 1
+
+    def test_with_failures(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
+        httpx_mock.add_response(content=b"file1 data")
+        httpx_mock.add_response(status_code=401)
+        httpx_mock.add_response(content=b"file3 data")
+        client = LinearClient(api_key="lin_api_test")
+        urls = [
+            ("img.png", "https://uploads.linear.app/ws/u1/aaaa1111"),
+            ("bad.pdf", "https://uploads.linear.app/ws/u2/bbbb2222"),
+            ("doc.txt", "https://uploads.linear.app/ws/u3/cccc3333"),
+        ]
+        manifest = download_all(client, urls, tmp_path / "files")
+        assert manifest == {
+            "https://uploads.linear.app/ws/u1/aaaa1111": "aaaa1111_img.png",
+            "https://uploads.linear.app/ws/u3/cccc3333": "cccc3333_doc.txt",
+        }
+        assert (tmp_path / "files" / "aaaa1111_img.png").read_bytes() == b"file1 data"
+        assert not (tmp_path / "files" / "bbbb2222_bad.pdf").exists()
+        assert (tmp_path / "files" / "cccc3333_doc.txt").read_bytes() == b"file3 data"
 
 
 class TestWriteManifest:
