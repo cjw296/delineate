@@ -78,6 +78,39 @@ class TestExportCommand:
         result = run_cli("--auth", str(auth_file), "export", "nonexistent")
         assert result.exit_code != 0
 
+    def test_saves_latest_without_update_flag(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
+        auth_file = _make_auth_file(tmp_path)
+        export_dir = tmp_path / "export"
+        export_dir.mkdir()
+
+        httpx_mock.add_response(
+            json=make_paginated_response(
+                "issues",
+                [
+                    {
+                        "id": "a01126f0-8a0a-4c98-ac24-b15a7706d048",
+                        "identifier": "ENG-1",
+                        "title": "Test Issue",
+                        "description": None,
+                        "updatedAt": "2024-06-15T12:00:00Z",
+                    },
+                ],
+            ),
+        )
+
+        result = run_cli(
+            "--auth",
+            str(auth_file),
+            "export",
+            "--path",
+            str(export_dir),
+            "issues",
+        )
+        assert result.exit_code == 0
+
+        latest = LatestData.load(export_dir / "latest.json")
+        assert latest["issues"] == "2024-06-15T12:00:00Z"
+
     def test_update_mode_saves_latest(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
         auth_file = _make_auth_file(tmp_path)
         export_dir = tmp_path / "export"

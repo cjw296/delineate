@@ -88,14 +88,15 @@ def export(
     export_path: Path,
     update: bool,
 ) -> None:
-    """Export data from Linear.
+    """
+    Export data from Linear.
 
     Optionally specify entity types to export (e.g. issues comments).
     If none specified, all entity types are exported.
     """
     client = client_from_auth(ctx.obj)
     latest_path = export_path / "latest.json"
-    latest = LatestData.load(latest_path) if update else None
+    latest = LatestData.load(latest_path) if update else LatestData()
 
     exports_to_run = EXPORTS
     if entities:
@@ -130,5 +131,4 @@ def export(
     finally:
         manager.stop()
 
-    if latest is not None:
-        latest.save(latest_path)
+    latest.save(latest_path)
