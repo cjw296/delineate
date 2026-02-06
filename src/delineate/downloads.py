@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+import tempfile
 from pathlib import Path
 from urllib.parse import urlparse, urlunparse
 
@@ -44,12 +45,17 @@ def download_file(
     dest = file_directory / filename
     if dest.exists():
         return filename
-    file_directory.mkdir(parents=True, exist_ok=True)
+    # Download to temp file first, only create directory on success
     try:
-        client.download(url, dest)
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            tmp_path = Path(tmp.name)
+        client.download(url, tmp_path)
     except httpx.HTTPStatusError as e:
         logger.warning("Failed to download %s: %s", url, e.response.status_code)
+        tmp_path.unlink(missing_ok=True)
         return None
+    file_directory.mkdir(parents=True, exist_ok=True)
+    tmp_path.rename(dest)
     return filename
 
 

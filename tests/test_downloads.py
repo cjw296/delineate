@@ -114,7 +114,7 @@ class TestDownloadFile:
             tmp_path,
         )
         assert filename is None
-        assert not (tmp_path / "abcd" / "abcd1234" / "report.pdf").exists()
+        assert not (tmp_path / "abcd" / "abcd1234").exists()  # No directory created on failure
 
 
 class TestManifest:
@@ -190,7 +190,7 @@ class TestDownloadAll:
             "https://uploads.linear.app/ws/u3/cccc3333",
         }
         assert (files_dir / "aaaa" / "aaaa1111" / "img.png").read_bytes() == b"file1 data"
-        assert not (files_dir / "bbbb" / "bbbb2222" / "bad.pdf").exists()
+        assert not (files_dir / "bbbb" / "bbbb2222").exists()  # No directory on failure
         assert (files_dir / "cccc" / "cccc3333" / "doc.txt").read_bytes() == b"file3 data"
 
     def test_resume_from_manifest(self, httpx_mock: HTTPXMock, tmp_path: Path) -> None:
