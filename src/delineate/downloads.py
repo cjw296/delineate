@@ -1,9 +1,14 @@
 import json
+import logging
 import re
 from pathlib import Path
 from urllib.parse import urlparse, urlunparse
 
+import httpx
+
 from .client import LinearClient
+
+logger = logging.getLogger(__name__)
 
 UPLOAD_URL_PATTERN = re.compile(r'!?\[([^\]]*)\]\((https://uploads\.linear\.app/[^)]+)\)')
 
@@ -27,13 +32,19 @@ def _local_filename(url: str, display_name: str) -> str:
     return f"{file_uuid}_{name}"
 
 
-def download_file(client: LinearClient, url: str, display_name: str, dest_dir: Path) -> str:
+def download_file(
+    client: LinearClient, url: str, display_name: str, dest_dir: Path
+) -> str | None:
     filename = _local_filename(url, display_name)
     dest = dest_dir / filename
     if dest.exists():
         return filename
     dest_dir.mkdir(parents=True, exist_ok=True)
-    client.download(url, dest)
+    try:
+        client.download(url, dest)
+    except httpx.HTTPStatusError as e:
+        logger.warning("Failed to download %s: %s", url, e.response.status_code)
+        return None
     return filename
 
 
@@ -46,7 +57,8 @@ def download_all(
         if base_url in manifest:
             continue
         filename = download_file(client, base_url, display_name, dest_dir)
-        manifest[base_url] = filename
+        if filename is not None:
+            manifest[base_url] = filename
     return manifest
 
 

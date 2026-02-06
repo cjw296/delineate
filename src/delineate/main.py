@@ -24,12 +24,12 @@ from .queries import VIEWER
     '-l',
     '--log-level',
     type=click.Choice(['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']),
+    default='WARNING',
 )
 @click.pass_context
-def cli(ctx: click.Context, auth_path: Path, log_level: str | None) -> None:
+def cli(ctx: click.Context, auth_path: Path, log_level: str) -> None:
     ctx.obj = auth_path
-    if log_level:
-        logging.basicConfig(level=getattr(logging, log_level))
+    logging.basicConfig(level=getattr(logging, log_level))
 
 
 @cli.command()
