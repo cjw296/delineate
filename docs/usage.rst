@@ -13,21 +13,9 @@ Available Commands
 * ``delineate export`` - Export data from Linear
 * ``delineate version`` - Show the version
 
-For help with any command, use:
+For help with any command::
 
-.. tabs::
-
-   .. group-tab:: Linux/macOS
-
-      .. code-block:: bash
-
-         delineate {COMMAND} --help
-
-   .. group-tab:: Windows (PowerShell)
-
-      .. code-block:: powershell
-
-         delineate {COMMAND} --help
+   delineate {COMMAND} --help
 
 Export File Structure
 ---------------------
@@ -73,56 +61,20 @@ of the UUID to avoid filesystem issues with large numbers of files.
 Basic Usage Examples
 --------------------
 
-**Export all data:**
+**Export all data**::
 
-.. tabs::
+   delineate export --path ~/linear-backup
 
-   .. group-tab:: Linux/macOS
+**Export specific entity types**::
 
-      .. code-block:: bash
-
-         delineate export --path ~/linear-backup
-
-   .. group-tab:: Windows (PowerShell)
-
-      .. code-block:: powershell
-
-         delineate export --path $HOME\linear-backup
-
-**Export specific entity types:**
-
-.. tabs::
-
-   .. group-tab:: Linux/macOS
-
-      .. code-block:: bash
-
-         delineate export --path ~/linear-backup issues comments
-
-   .. group-tab:: Windows (PowerShell)
-
-      .. code-block:: powershell
-
-         delineate export --path $HOME\linear-backup issues comments
+   delineate export --path ~/linear-backup issues comments
 
 **Incremental update:**
 
 After an initial export, use ``--update`` to only fetch entities that have
-changed since the last export:
+changed since the last export::
 
-.. tabs::
-
-   .. group-tab:: Linux/macOS
-
-      .. code-block:: bash
-
-         delineate export --path ~/linear-backup --update
-
-   .. group-tab:: Windows (PowerShell)
-
-      .. code-block:: powershell
-
-         delineate export --path $HOME\linear-backup --update
+   delineate export --path ~/linear-backup --update
 
 This uses timestamps stored in ``latest.json`` to filter the API queries,
 making subsequent exports much faster.
