@@ -3,6 +3,7 @@ from importlib import metadata
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
+    'sphinx_tabs.tabs',
 ]
 
 intersphinx_mapping = {
