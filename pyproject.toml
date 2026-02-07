@@ -9,6 +9,8 @@ authors = [
 requires-python = ">=3.13"
 dependencies = [
     "click>=8.2",
+    "httpx>=0.28",
+    "enlighten>=1.14.1",
 ]
 
 [project.urls]
@@ -32,6 +34,8 @@ dev = [
     "mypy>=1.15.0",
     "pytest>=8.3.5",
     "pytest-cov>=6.1.1",
+    "pytest-httpx>=0.35",
+    "testfixtures>=9.0.1",
 ]
 
 [tool.hatch.build.targets.sdist]
@@ -42,6 +46,10 @@ strict= true
 check_untyped_defs = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
+
+[[tool.mypy.overrides]]
+module = "enlighten.*"
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 
