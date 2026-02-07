@@ -30,3 +30,53 @@ and [Claude Code](claude.ai/code) when working with code in this repository.
 - Keep commit messages succinct, do not use any emojis
 - Do not add prefixes such as "feat:", "chore:", "test:", "fix:", etc.
 - Capitalize the first letter of any commit message
+
+## Issue Tracking with bd
+
+This project uses `bd` (beads) for issue tracking. **Always use bd instead of in-memory task tools.**
+
+**Core workflow:**
+- `bd ready` - See what issues are ready to work on (no blocking deps)
+- `bd list` - List all issues
+- `bd show <id>` - Show issue details
+- `bd create "Title"` - Create new issue
+- `bd update <id> --status in_progress` - Mark as in progress
+- `bd close <id>` - Close completed issue
+
+**When starting work:**
+1. Run `bd ready` to see available work
+2. Pick an issue and run `bd update <id> --status in_progress`
+
+**When discovering new work:**
+- Create issues for anything that needs follow-up: `bd create "Fix the thing"`
+- Add dependencies if needed: `bd dep add <blocked> <blocker>`
+
+**When finishing work:**
+- Close completed issues: `bd close <id>`
+- Create issues for any remaining TODOs
+
+## Landing the Plane (Session Completion)
+
+**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
+
+**MANDATORY WORKFLOW:**
+
+1. **File issues for remaining work** - Create issues for anything that needs follow-up
+2. **Run quality gates** (if code changed) - Tests, linters, builds
+3. **Update issue status** - Close finished work, update in-progress items
+4. **PUSH TO REMOTE** - This is MANDATORY:
+   ```bash
+   git pull --rebase
+   bd sync
+   git push
+   git status  # MUST show "up to date with origin"
+   ```
+5. **Clean up** - Clear stashes, prune remote branches
+6. **Verify** - All changes committed AND pushed
+7. **Hand off** - Provide context for next session
+
+**CRITICAL RULES:**
+- Work is NOT complete until `git push` succeeds
+- NEVER stop before pushing - that leaves work stranded locally
+- NEVER say "ready to push when you are" - YOU must push
+- If push fails, resolve and retry until it succeeds

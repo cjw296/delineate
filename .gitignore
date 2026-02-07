@@ -12,6 +12,7 @@ wheels/
 !.git*
 !.python-version
 !.readthedocs.yaml
+!.beads/
 /*.json
 /*.jsonl
 uv.lock
