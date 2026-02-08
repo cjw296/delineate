@@ -1,7 +1,8 @@
 Changes
 =======
 
-0.0.0 (2025-02-04)
-------------------
+1.0.0 (8th Feb 2026)
+--------------------
 
-Placeholder release with functional continuous integration.
+First release including full and incremental backups.
+

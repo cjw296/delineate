@@ -1,6 +1,6 @@
 [project]
 name = "delineate"
-version = "0.0.0"
+version = "1.0.0"
 description = "Backup and export data from Linear."
 readme = "README.rst"
 authors = [
