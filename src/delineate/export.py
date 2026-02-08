@@ -71,20 +71,13 @@ class Export:
             latest[self.entity_type] = max_updated
 
 
-class StaticExport(Export):
-    def items(
-        self, client: LinearClient, latest: LatestData | None = None
-    ) -> Iterator[dict[str, Any]]:
-        yield from client.paginate(self.query, self.connection_path)
-
-
 EXPORTS: dict[str, Export] = {
-    "teams": StaticExport(
+    "teams": Export(
         entity_type="teams",
         query=TEAMS,
         connection_path="teams",
     ),
-    "users": StaticExport(
+    "users": Export(
         entity_type="users",
         query=USERS,
         connection_path="users",
@@ -107,19 +100,19 @@ EXPORTS: dict[str, Export] = {
         connection_path="projects",
         markdown_fields=("description",),
     ),
-    "initiatives": StaticExport(
+    "initiatives": Export(
         entity_type="initiatives",
         query=INITIATIVES,
         connection_path="initiatives",
         markdown_fields=("description",),
     ),
-    "cycles": StaticExport(
+    "cycles": Export(
         entity_type="cycles",
         query=CYCLES,
         connection_path="cycles",
         markdown_fields=("description",),
     ),
-    "issue_labels": StaticExport(
+    "issue_labels": Export(
         entity_type="issue_labels",
         query=ISSUE_LABELS,
         connection_path="issueLabels",
@@ -130,7 +123,7 @@ EXPORTS: dict[str, Export] = {
         connection_path="documents",
         markdown_fields=("content",),
     ),
-    "workflow_states": StaticExport(
+    "workflow_states": Export(
         entity_type="workflow_states",
         query=WORKFLOW_STATES,
         connection_path="workflowStates",
@@ -140,7 +133,7 @@ EXPORTS: dict[str, Export] = {
         query=ATTACHMENTS,
         connection_path="attachments",
     ),
-    "project_milestones": StaticExport(
+    "project_milestones": Export(
         entity_type="project_milestones",
         query=PROJECT_MILESTONES,
         connection_path="projectMilestones",

@@ -9,8 +9,8 @@ query {
 """
 
 TEAMS = """
-query($first: Int!, $after: String) {
-    teams(first: $first, after: $after) {
+query($first: Int!, $after: String, $filter: TeamFilter) {
+    teams(first: $first, after: $after, filter: $filter) {
         nodes {
             id
             name
@@ -30,8 +30,8 @@ query($first: Int!, $after: String) {
 """
 
 USERS = """
-query($first: Int!, $after: String) {
-    users(first: $first, after: $after) {
+query($first: Int!, $after: String, $filter: UserFilter) {
+    users(first: $first, after: $after, filter: $filter) {
         nodes {
             id
             name
@@ -132,8 +132,8 @@ query($first: Int!, $after: String, $filter: ProjectFilter) {
 """
 
 INITIATIVES = """
-query($first: Int!, $after: String) {
-    initiatives(first: $first, after: $after) {
+query($first: Int!, $after: String, $filter: InitiativeFilter) {
+    initiatives(first: $first, after: $after, filter: $filter) {
         nodes {
             id
             name
@@ -153,8 +153,8 @@ query($first: Int!, $after: String) {
 """
 
 CYCLES = """
-query($first: Int!, $after: String) {
-    cycles(first: $first, after: $after) {
+query($first: Int!, $after: String, $filter: CycleFilter) {
+    cycles(first: $first, after: $after, filter: $filter) {
         nodes {
             id
             name
@@ -174,8 +174,8 @@ query($first: Int!, $after: String) {
 """
 
 ISSUE_LABELS = """
-query($first: Int!, $after: String) {
-    issueLabels(first: $first, after: $after) {
+query($first: Int!, $after: String, $filter: IssueLabelFilter) {
+    issueLabels(first: $first, after: $after, filter: $filter) {
         nodes {
             id
             name
@@ -214,8 +214,8 @@ query($first: Int!, $after: String, $filter: DocumentFilter) {
 """
 
 WORKFLOW_STATES = """
-query($first: Int!, $after: String) {
-    workflowStates(first: $first, after: $after) {
+query($first: Int!, $after: String, $filter: WorkflowStateFilter) {
+    workflowStates(first: $first, after: $after, filter: $filter) {
         nodes {
             id
             name
@@ -257,8 +257,8 @@ query($first: Int!, $after: String, $filter: AttachmentFilter) {
 """
 
 PROJECT_MILESTONES = """
-query($first: Int!, $after: String) {
-    projectMilestones(first: $first, after: $after) {
+query($first: Int!, $after: String, $filter: ProjectMilestoneFilter) {
+    projectMilestones(first: $first, after: $after, filter: $filter) {
         nodes {
             id
             name
