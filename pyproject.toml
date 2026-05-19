@@ -59,6 +59,9 @@ line-length = 100
 [tool.ruff.format]
 quote-style = "preserve"
 
+[tool.coverage.run]
+source = ["delineate", "tests"]
+
 [tool.coverage.report]
 exclude_also = [
     "\\.\\.\\.",
